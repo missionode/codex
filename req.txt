@@ -1,0 +1,46 @@
+# Todo List Application Requirements
+
+## Phase 1: Command-Line Interface (CLI)
+
+### Architecture:
+*   **Presentation Layer (CLI):** Interactive Terminal User Interface (TUI) using the `questionary` library. Handles user input, displays tasks, and manages interactive selections.
+*   **Business Logic Layer (Core Engine):** `TaskManager` class (or similar) responsible for all task management operations (add, get, update, delete). This layer will be independent of the UI and reusable for the GUI phase.
+*   **Data Persistence Layer (Storage):** Tasks will be stored in a simple JSON file (`tasks.json`).
+
+### User Interaction (TUI):
+*   **Application Start:**
+    *   Run `python todo.py`.
+    *   The terminal will clear and immediately display the current list of tasks.
+    *   A prompt will appear at the bottom, waiting for user input.
+*   **Default Action (Add Task):**
+    *   Any input typed at the prompt that *does not* start with `/` will be treated as a new task description.
+    *   Pressing Enter will add the task, and the displayed task list will refresh.
+*   **Special Commands (Starting with `/`):**
+    *   Users type a command starting with `/` and press Enter.
+    *   **`/complete`**:
+        *   Toggles the completion status of a selected task.
+        *   After typing `/complete`, an interactive selection menu of tasks will appear.
+        *   Users navigate with arrow keys and press Enter to select a task.
+        *   If the task is incomplete, it will be marked as complete. If it is already complete, it will be marked as incomplete.
+        *   The task list will refresh.
+    *   **`/delete`**:
+        *   After typing `/delete`, an interactive selection menu of tasks will appear.
+        *   Users navigate with arrow keys and press Enter to select a task to delete.
+        *   The task list will refresh.
+    *   **`/edit`**:
+        *   After typing `/edit`, an interactive selection menu of tasks will appear.
+        *   Users navigate with arrow keys and press Enter to select a task to edit.
+        *   A prompt will ask for the new task description.
+        *   The task list will refresh.
+    *   **`/flush`**:
+        *   Removes all completed tasks from the list after a confirmation.
+    *   **`/exit`**:
+        *   Closes the application.
+
+### Dependencies:
+*   `questionary` library for interactive TUI elements.
+
+## Phase 2: Graphical User Interface (GUI)
+*   To be developed after the CLI is completed.
+*   Will reuse the Business Logic Layer (`TaskManager`).
+*   Specific GUI framework and design to be discussed later.
