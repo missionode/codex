@@ -1,1 +1,2 @@
 questionary==1.10.0
+thefuzz[speedup]>=0.20

@@ -34,6 +34,9 @@
         *   The task list will refresh.
     *   **`/flush`**:
         *   Removes all completed tasks from the list after a confirmation.
+    *   **`/search`**:
+        *   Prompts the user for a search term.
+        *   Displays a list of tasks that fuzzy-match the search term.
     *   **`/exit`**:
         *   Closes the application.
 

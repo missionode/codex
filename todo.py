@@ -1,6 +1,8 @@
 import os
 import questionary
 from task_manager import TaskManager
+from thefuzz import fuzz
+from prompt_toolkit.completion import WordCompleter
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -14,17 +16,24 @@ def display_tasks(tasks):
     for i, task in enumerate(tasks, 1):
         status = "[x]" if task['completed'] else "[ ]"
         print(f"{status} {i}: {task['description']}")
-    print("------------------\n")
+    print("------------------")
+    print("Hint: Type / for commands\n")
 
 def main():
     task_manager = TaskManager()
+    
+    command_list = ['/complete', '/delete', '/edit', '/flush', '/search', '/exit']
+    command_completer = WordCompleter(command_list, ignore_case=True)
 
     while True:
         clear_screen()
         display_tasks(task_manager.get_tasks())
 
         try:
-            user_input = questionary.text("Enter a command or a new task:").ask()
+            user_input = questionary.text(
+                "Enter a command or a new task:",
+                completer=command_completer
+            ).ask()
         except KeyboardInterrupt:
             # Handle Ctrl+C gracefully
             user_input = "/exit"
@@ -135,12 +144,48 @@ def main():
                         input("No completed tasks to remove. Press Enter to continue.")
                 else:
                     input("Flush cancelled. Press Enter to continue.")
+
+            elif command == '/search':
+                search_query = questionary.text("Search for:").ask()
+                if search_query:
+                    all_tasks = task_manager.get_tasks()
+                    search_results = [
+                        task for task in all_tasks 
+                        if fuzz.partial_ratio(search_query.lower(), task['description'].lower()) > 75
+                    ]
+                    
+                    clear_screen()
+                    print(f"--- Search Results for '{search_query}' ---")
+                    if search_results:
+                        # Re-using the display_tasks function to show results
+                        display_tasks(search_results)
+                    else:
+                        print("No matching tasks found.")
+                    
+                    input("\nPress Enter to return to the main list.")
+                else:
+                    input("Search cancelled. Press Enter to continue.")
             else:
                 input(f"Unknown command: {command}. Press Enter to continue.")
         else:
             # Default action: add a new task
-            task_manager.add_task(user_input)
-            input(f"Task '{user_input}' added. Press Enter to continue.")
+            SIMILARITY_THRESHOLD = 85
+            proceed_to_add = True
+            
+            existing_tasks = task_manager.get_tasks()
+            for task in existing_tasks:
+                similarity = fuzz.partial_ratio(user_input.lower(), task['description'].lower())
+                if similarity >= SIMILARITY_THRESHOLD:
+                    if not questionary.confirm(
+                        f"This is {similarity}% similar to an existing task: '{task['description']}'.\nAre you sure you want to add it?"
+                    ).ask():
+                        proceed_to_add = False
+                        input("Add task cancelled. Press Enter to continue.")
+                        break
+            
+            if proceed_to_add:
+                task_manager.add_task(user_input)
+                input(f"Task '{user_input}' added. Press Enter to continue.")
 
 if __name__ == '__main__':
     main()
