@@ -1,10 +1,5 @@
 [
     {
-        "id": 8,
-        "description": "added task to check yn ",
-        "completed": false
-    },
-    {
         "id": 10,
         "description": "add anorher task",
         "completed": false
